@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yadhu Krishnan E T</title>
+<meta name="description" content="Yadhu Krishnan E T. Photonics researcher working on photonic integrated circuits and silicon photonics.">
+<meta name="theme-color" content="#09090b">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Yadhu Krishnan E T">
+<meta property="og:description" content="Photonic integrated circuits: design, simulation and characterization. Advanced MSc in Silicon Photonics, Ghent University.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%230b0b0d%22/%3E%3Ccircle cx=%2232%22 cy=%2226%22 r=%2214%22 fill=%22none%22 stroke=%22%23ff4a5e%22 stroke-width=%225%22/%3E%3Cpath d=%22M8 49h48%22 stroke=%22%23ff4a5e%22 stroke-width=%225%22 stroke-linecap=%22round%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout idea: the page is a mask layout seen in a layout viewer. Dark field, hatched
+     red layer, a waveguide trace opens every section. The one loud thing is the hero:
+     a glass chip with two coupled racetrack resonators and photons moving through it. Glow is kept
+     to the hero, the section traces and hover states. Panels are frosted glass over soft
+     red light. Single dark theme by choice. */
+  --field:#09090b;
+  --ink:#f2f0ee;
+  --muted:#b9b7bd;
+  --line:rgba(255,255,255,.1);
+  --glass:rgba(255,255,255,.05);          /* frosted panels over the red ambient light */
+  --glass-edge:rgba(255,255,255,.14);
+  --frost:blur(20px) saturate(150%);
+  --wg:#ff4a5e;        /* accent: waveguide layer, positive field */
+  --glow:0 0 6px rgba(255,74,94,.85),0 0 22px rgba(255,74,94,.5);   /* laser glow on anything red */
+  --cold:#efe6df;      /* negative field, through port */
+  --plate:rgba(6,6,8,.6);  /* schematic plates */
+  --display:"Bricolage Grotesque","Arial Narrow",Arial,sans-serif;
+  --body:"IBM Plex Sans","Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --hatch:repeating-linear-gradient(135deg,var(--wg) 0 1.5px,transparent 1.5px 5px);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--field);position:relative;isolation:isolate;color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:
+  radial-gradient(560px 560px at 84% 26%,rgba(255,74,94,.3),transparent 70%),
+  radial-gradient(640px 640px at 4% 82%,rgba(255,56,56,.2),transparent 70%),
+  radial-gradient(480px 480px at 58% 104%,rgba(255,120,64,.16),transparent 70%)}
+.glass{background:linear-gradient(rgba(10,10,12,.3),rgba(10,10,12,.3)),var(--glass);border:1px solid var(--glass-edge);-webkit-backdrop-filter:var(--frost);backdrop-filter:var(--frost);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 26px 60px -34px rgba(0,0,0,.9)}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit;text-decoration-color:var(--wg);text-decoration-thickness:2px;text-underline-offset:4px}
+a:hover{color:var(--wg)}
+a:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid var(--wg);outline-offset:3px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.mono{font-family:var(--mono);font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+p{margin:0}
+
+header.top{position:sticky;top:0;z-index:5;background:rgba(9,9,11,.5);-webkit-backdrop-filter:var(--frost);backdrop-filter:var(--frost);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;align-items:center;justify-content:space-between;padding-top:12px;padding-bottom:12px}
+.brand{font-family:var(--display);font-weight:800;font-size:1.05rem;text-decoration:none}
+.brand i{font-style:normal;color:var(--wg)}
+nav{display:flex;flex-wrap:wrap;gap:6px 22px}
+nav a{font-family:var(--mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;text-decoration:none;color:var(--muted);padding:3px 0;border-bottom:2px solid transparent;transition:color .2s,border-color .2s}
+nav a:hover{color:var(--ink)}
+nav a.on{color:var(--ink);border-bottom-color:var(--wg)}
+
+/* hero */
+.hero{padding:52px 0 76px}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.2fr);gap:48px;align-items:center}
+.hero h1{font-weight:800;font-size:clamp(3rem,7.6vw,6rem);line-height:.9;letter-spacing:-.045em;font-stretch:75%;margin:18px 0 26px}
+.hero h1 span{display:block}
+.hero h1 .et{color:transparent;background:var(--hatch);-webkit-background-clip:text;background-clip:text;-webkit-text-stroke:1.5px var(--wg);filter:drop-shadow(0 0 5px rgba(255,74,94,.9)) drop-shadow(0 0 20px rgba(255,74,94,.55))}
+.lede{font-size:1.16rem;max-width:32em;margin-bottom:14px}
+.now{color:var(--muted);max-width:34em;margin-bottom:26px}
+.links{display:flex;flex-wrap:wrap;gap:10px 24px;font-weight:500}
+
+.stage{perspective:1300px}
+.tilt{will-change:transform}
+.chip{position:relative;border-radius:16px;padding:18px 18px 16px;display:grid;gap:12px}
+#chipcv{aspect-ratio:600/350;border-radius:10px;border:1px solid var(--line);background:rgba(8,8,10,.35)}
+.glare{position:absolute;inset:0;border-radius:16px;pointer-events:none;background:radial-gradient(380px circle at var(--gx,50%) var(--gy,28%),rgba(255,255,255,.12),transparent 62%)}
+.pill[hidden]{display:none}
+.social{display:flex;flex-wrap:wrap;gap:12px}
+.social a{display:inline-flex;align-items:center;gap:9px;padding:10px 18px 10px 15px;border-radius:999px;text-decoration:none;font-weight:500;transition:border-color .25s,box-shadow .25s,color .25s}
+.social a:hover{color:var(--ink);text-shadow:none;border-color:rgba(255,74,94,.65);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 24px -4px rgba(255,74,94,.6)}
+.social svg{color:var(--wg)}
+.social img{height:20px;width:auto;max-width:24px;object-fit:contain;filter:drop-shadow(0 0 3px rgba(255,74,94,.9)) drop-shadow(0 0 9px rgba(255,74,94,.55));transition:filter .25s}
+.social a:hover img{filter:drop-shadow(0 0 4px rgba(255,74,94,1)) drop-shadow(0 0 14px rgba(255,74,94,.85))}
+.chip-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+.pill{font-family:var(--mono);font-size:.74rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);background:rgba(255,255,255,.07);border:1px solid var(--glass-edge);border-radius:999px;padding:6px 13px 6px 11px;display:inline-flex;gap:8px;align-items:center;cursor:pointer}
+.pill:hover{background:rgba(255,255,255,.13)}
+.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:#5a5a61}
+.pill[aria-pressed=true]::before{background:var(--wg);box-shadow:var(--glow)}
+.chip-head b{font-family:var(--display);font-weight:600;font-size:1.05rem}
+canvas{display:block;width:100%}
+
+/* sections: each opens with a waveguide trace and a ring coupled to it */
+section,footer{padding:0 0 76px}
+.trace{position:relative;height:5px;margin-bottom:60px;filter:drop-shadow(0 0 4px rgba(255,74,94,.8)) drop-shadow(0 0 10px rgba(255,74,94,.35))}
+.trace::before{content:"";position:absolute;left:max(24px,calc(50% - 566px));top:8px;width:34px;height:34px;border-radius:50%;border:4px solid var(--wg);transition:transform .4s .3s cubic-bezier(.2,.7,.2,1),opacity .25s .3s}
+.trace::after{content:"";position:absolute;inset:0;background:var(--hatch);transform-origin:var(--from,left);transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.trace.pre::after{transform:scaleX(0)}
+.trace.pre::before{transform:scale(0);opacity:0}
+.trace.snap::before,.trace.snap::after{transition:none}
+.sec-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:24px;align-items:end;margin-bottom:40px}
+.sec-head h2,footer h2{font-size:clamp(2rem,4.6vw,3.3rem);font-weight:800;letter-spacing:-.035em;line-height:1;font-stretch:80%}
+.sec-head p{color:var(--muted);max-width:38em}
+
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.card{border-radius:14px;padding:18px;display:grid;gap:12px;align-content:start}
+.card:hover{border-color:rgba(255,74,94,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 30px -6px rgba(255,74,94,.55)}
+.thumb{background:var(--plate);border:1px solid var(--line);border-radius:8px;aspect-ratio:16/10;overflow:hidden;padding:10px}
+.thumb svg{width:100%;height:100%;display:block}
+.thumb .g{filter:drop-shadow(0 0 3px rgba(255,74,94,.85))}
+.card{cursor:pointer}
+.card:focus-visible{outline:2px solid var(--wg);outline-offset:3px}
+.card .txt,dialog .txt{display:grid;gap:12px;align-content:start}
+.hint{color:var(--muted);transition:color .2s}
+.card:hover .hint,.card:focus-visible .hint{color:#ff7483}
+.brief{margin:0;padding:0;list-style:none}
+.brief li{position:relative;padding:11px 0 11px 22px;border-top:1px solid var(--line)}
+.brief li::before{content:"";position:absolute;left:2px;top:1.25em;width:8px;height:2px;background:var(--wg)}
+dialog{width:min(760px,calc(100% - 32px));max-height:calc(100% - 48px);overflow:auto;padding:26px;border:1px solid var(--glass-edge);border-radius:16px;color:var(--ink);background:rgba(15,15,18,.86);-webkit-backdrop-filter:var(--frost);backdrop-filter:var(--frost);box-shadow:0 30px 80px -20px rgba(0,0,0,.9),0 0 60px -20px rgba(255,74,94,.45)}
+dialog::backdrop{background:rgba(4,4,6,.66);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+dialog[open]{animation:rise .3s cubic-bezier(.2,.7,.2,1) both}
+.d-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;align-items:center;margin-bottom:20px}
+dialog h3{font-size:clamp(1.3rem,2.6vw,1.7rem);font-weight:600;letter-spacing:-.015em;line-height:1.15}
+dialog .mono b{color:#ff7483;font-weight:500}
+dialog .x{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:1px solid var(--glass-edge);background:rgba(255,255,255,.07);color:var(--ink);font-size:1.3rem;line-height:1;cursor:pointer}
+dialog .x:hover{background:rgba(255,255,255,.14)}
+.card.feature{grid-column:1/-1;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:30px;align-items:center}
+.card.feature h3{font-size:clamp(1.4rem,2.6vw,1.9rem)}
+.card.feature p{font-size:1.02rem;max-width:30em}
+.card h3{font-size:1.2rem;font-weight:600;letter-spacing:-.01em;line-height:1.2}
+.card p{font-size:.95rem;color:#e0dedc}
+.card .mono b{color:#ff7483;font-weight:500}
+
+.rows{display:grid}
+.row{display:grid;grid-template-columns:170px minmax(0,1fr);gap:24px;padding:15px 0;border-top:1px solid var(--line)}
+.row .mono{padding-top:4px}
+.row b{font-weight:600}
+.row p{margin-top:2px;color:var(--muted);font-size:.95rem;max-width:44em}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.cols>div{border-radius:14px;padding:20px 20px 12px}
+.cols h3{font-size:1.05rem;font-weight:600;margin-bottom:10px}
+.cols ul{list-style:none;margin:0;padding:0}
+.cols li{padding:7px 0;border-top:1px solid var(--line);font-size:.97rem}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;margin-top:52px}
+.two h3{font-size:1.25rem;font-weight:600;margin-bottom:8px}
+
+footer{padding-bottom:64px}
+footer h2{margin-bottom:18px}
+footer p{max-width:36em;margin-bottom:20px}
+.fine{margin-top:44px}
+
+@media (max-width:900px){
+  .hero .wrap,.sec-head,.two{grid-template-columns:minmax(0,1fr)}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cols{grid-template-columns:minmax(0,1fr)}
+  .hero{padding-top:36px}
+}
+@media (max-width:700px){:root{--frost:blur(10px) saturate(140%)}}
+@media (max-width:560px){
+  body{font-size:16px}
+  .cards{grid-template-columns:minmax(0,1fr)}
+  .card.feature,.d-top{grid-template-columns:minmax(0,1fr);gap:12px}
+  dialog{padding:20px}
+  header.top .wrap{flex-wrap:nowrap;gap:16px}
+  .brand .full{display:none}
+  nav{flex-wrap:nowrap;overflow-x:auto;gap:18px;white-space:nowrap;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent);padding-right:22px}
+  nav::-webkit-scrollbar{display:none}
+  .row{grid-template-columns:minmax(0,1fr);gap:2px}
+}
+/* motion: hero rises on load, sections come in on scroll (class added by script, so the page is whole without it) */
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.hero .wrap>div:first-child>*{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
+.hero .wrap>div:first-child>:nth-child(2){animation-delay:.08s}
+.hero .wrap>div:first-child>:nth-child(3){animation-delay:.18s}
+.hero .wrap>div:first-child>:nth-child(4){animation-delay:.26s}
+.hero .wrap>div:first-child>:nth-child(5){animation-delay:.34s}
+.chip{animation:rise .9s .2s cubic-bezier(.2,.7,.2,1) both}
+.rv{transition:opacity .45s ease,transform .5s cubic-bezier(.2,.7,.2,1),border-color .25s,box-shadow .25s}
+.rv.pre{opacity:.2;transform:translateY(var(--dy,14px))}
+.rv.snap{transition:none}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero *,.chip,dialog[open]{animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Yadhu Krishnan E T"><span class="full">Yadhu Krishnan </span><i>E&nbsp;T</i></a>
+    <nav aria-label="Sections">
+      <a href="#research">Research</a>
+      <a href="#posters">Posters</a>
+      <a href="#toolbox">Toolbox</a>
+      <a href="#background">Background</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<div class="hero">
+  <div class="wrap">
+    <div>
+      <div class="mono">Photonic integrated circuits · Ghent, Belgium</div>
+      <h1><span>Yadhu</span><span>Krishnan</span><span class="et">E&nbsp;T</span></h1>
+      <p class="lede">I work on photonic integrated circuits: designing, simulating and characterizing the devices that route and tune light on a chip.</p>
+      <p class="now">Advanced MSc student in Silicon Photonics at Ghent University, with a master thesis on electro-optically tunable Vernier cavities. Looking for PhD and R&amp;D positions in integrated photonics.</p>
+      <div class="links">
+        <a href="#research">See the research</a>
+        <a href="https://www.linkedin.com/in/yadhu-krishnan-e-t-1020">LinkedIn</a>
+      </div>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="tilt" id="tilt">
+        <div class="chip glass" aria-label="Animated photonic chip">
+          <div class="chip-head">
+            <b>Vernier ring filter</b>
+            <button class="pill" id="run" type="button" aria-pressed="true">Pause animation</button>
+          </div>
+          <canvas id="chipcv" role="img" aria-label="A glass photonic chip. Light enters on an input waveguide, couples into a racetrack resonator, then into a second, larger racetrack with a tuner, and leaves on the drop waveguide. The glowing particles bend around the cursor."></canvas>
+          <div class="glare" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="research">
+  <div class="trace"></div>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Research</h2>
+      <p>Thesis work, course projects and research internships. Newest first.</p>
+    </div>
+    <div class="cards">
+      <article class="card glass feature" tabindex="0" role="button" aria-haspopup="dialog">
+        <div class="thumb"><svg id="svgVern" viewBox="0 0 300 180" role="img" aria-label="Schematic of an input waveguide, two coupled racetrack resonators of different size and a drop waveguide, with a tuner on the larger resonator"></svg></div>
+        <div class="txt">
+          <div class="mono"><b>Ongoing</b> · Master thesis · Ghent University</div>
+          <h3>PZT electro-optically tunable Vernier cavities</h3>
+          <p>Electrical and optical characterization of fabricated PZT Vernier cavities.</p>
+          <span class="hint mono">Details +</span>
+          <ul class="brief" hidden>
+            <li>Two coupled microring resonators with slightly different free spectral ranges, placed between an input and a drop waveguide.</li>
+            <li>PZT gives electro-optic tuning: a small shift of one resonator moves the selected wavelength by a full free spectral range.</li>
+            <li>Current work: electrical and optical characterization of the fabricated devices.</li>
+            <li>Status: ongoing.</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card glass" tabindex="0" role="button" aria-haspopup="dialog">
+        <div class="thumb"><svg id="svgGc" viewBox="0 0 300 180" role="img" aria-label="Schematic side view of an apodized grating coupler sending light up into a tilted fibre"></svg></div>
+        <div class="txt">
+          <div class="mono"><b>Ongoing</b> · Ghent University</div>
+          <h3>High-efficiency apodized grating couplers</h3>
+          <p>Apodized fibre-to-chip grating couplers designed for high coupling efficiency.</p>
+          <span class="hint mono">Details +</span>
+          <ul class="brief" hidden>
+            <li>Fibre-to-chip grating couplers whose period and fill factor change along the grating.</li>
+            <li>The apodization shapes the emitted beam to match the fibre mode, which raises coupling efficiency.</li>
+            <li>Simulated in Ansys Lumerical FDTD.</li>
+            <li>Status: ongoing.</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card glass" tabindex="0" role="button" aria-haspopup="dialog">
+        <div class="thumb"><svg id="svgLc" viewBox="0 0 300 180" role="img" aria-label="Schematic of a liquid crystal cell with light passing through"></svg></div>
+        <div class="txt">
+          <div class="mono">2025 – 2026 · IIA Bangalore</div>
+          <h3>Liquid crystal variable retarders for a spectropolarimeter</h3>
+          <p>Master's thesis. A Berreman 4×4 simulator, a full-Stokes polarimeter and first fabrication steps.</p>
+          <span class="hint mono">Details +</span>
+          <ul class="brief" hidden>
+            <li>Developed liquid crystal variable retarders for a multi-line spectropolarimeter at IIA, for solar magnetic field observations.</li>
+            <li>Wrote a Python Berreman 4×4 simulator and used simulated annealing to find passive quarter-wave retarder geometries for nematic cells. Validated it against published cholesteric reflection spectra.</li>
+            <li>Designed, calibrated and validated a full-Stokes polarimeter with pixel-wise Mueller matrix retrieval.</li>
+            <li>Fabrication training at the CREST campus: substrate preparation, spin coating and alignment layers.</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card glass" tabindex="0" role="button" aria-haspopup="dialog">
+        <div class="thumb"><svg id="svgBend" viewBox="0 0 300 180" role="img" aria-label="Schematic of a photonic crystal waveguide with a sharp bend"></svg></div>
+        <div class="txt">
+          <div class="mono">2025 · IIT Guwahati</div>
+          <h3>Sharp bends in photonic crystal waveguides</h3>
+          <p>High-transmission 120° bends for compact on-chip routers and splitters.</p>
+          <span class="hint mono">Details +</span>
+          <ul class="brief" hidden>
+            <li>Simulation-driven design methods for high-transmission 120° bends in photonic crystal waveguides.</li>
+            <li>Simulated with COMSOL, Lumerical FDTD and MIT Photonic Bands.</li>
+            <li>Aimed at ultra-compact routers and Y-splitters.</li>
+            <li>Summer research internship.</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card glass" tabindex="0" role="button" aria-haspopup="dialog">
+        <div class="thumb"><svg id="svgMeta" viewBox="0 0 300 180" role="img" aria-label="Schematic of a metasurface lattice of triangular holes with one unit cell marked"></svg></div>
+        <div class="txt">
+          <div class="mono">2024 · TIFR Hyderabad</div>
+          <h3>Tunable topological photonic metasurface</h3>
+          <p>Triangular-hole Sb₂S₃ metasurface: a symmetry-broken BIC for tunable circularly polarized light.</p>
+          <span class="hint mono">Details +</span>
+          <ul class="brief" hidden>
+            <li>Triangular holes break the C<sub>2</sub> symmetry, so the bound state in the continuum (BIC) near the Γ point leaks into a radiative mode.</li>
+            <li>This symmetry engineering generates circularly polarized light at the nanoscale.</li>
+            <li>Studied how the band structure of Sb₂S₃ changes across its phase transition, and how that changes the emitted light.</li>
+            <li>Theoretical study in COMSOL and Lumerical, with cleanroom exposure. VSRP summer internship. Led to a poster at OPTIQ 2025.</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card glass" tabindex="0" role="button" aria-haspopup="dialog">
+        <div class="thumb"><svg id="svgPcf" viewBox="0 0 300 180" role="img" aria-label="Schematic cross-section of a photonic crystal fibre"></svg></div>
+        <div class="txt">
+          <div class="mono">2024 · ISP, CUSAT</div>
+          <h3>Dirac modes in photonic crystal fibres</h3>
+          <p>Bachelor's thesis. Dirac-point guiding in photonic crystal fibres, simulated with FETD.</p>
+          <span class="hint mono">Details +</span>
+          <ul class="brief" hidden>
+            <li>Studied Dirac modes in photonic crystal fibres with the finite-element time-domain (FETD) method.</li>
+            <li>In one-dimensional photonic crystals, a Dirac point (a conical singularity in the band structure) suppresses radiation loss and gives a new guided mode.</li>
+            <li>A step beyond conventional fibre guiding, with applications in sensing and nonlinear optics.</li>
+            <li>Bachelor's thesis. Presented as a poster at OPTIQ 2025.</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card glass" tabindex="0" role="button" aria-haspopup="dialog">
+        <div class="thumb"><svg id="svgPyro" viewBox="0 0 300 180" role="img" aria-label="Schematic of two-colour ratio pyrometry"></svg></div>
+        <div class="txt">
+          <div class="mono">2023 · IIST Trivandrum</div>
+          <h3>Two-colour ratio pyrometry</h3>
+          <p>Two-colour imaging pyrometer, calibrated and used to map the temperature of a lamp filament.</p>
+          <span class="hint mono">Details +</span>
+          <ul class="brief" hidden>
+            <li>Non-contact temperature measurement of hot objects that emit like a black body, based on Planck radiation.</li>
+            <li>An image doubler with green and blue bandpass filters on its two arms images the target on a CCD at two wavelengths. The ratio of the two signals gives the surface temperature.</li>
+            <li>Calibrated with a standard intensity source and a fibre-coupled spectrometer, then used to map the temperature across the filament of a 60 W incandescent lamp.</li>
+            <li>Summer research internship.</li>
+          </ul>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="posters">
+  <div class="trace"></div>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Posters</h2>
+      <p>Presented at OPTIQ 2025, the International Conference on Optics, Photonics and Quantum Information.</p>
+    </div>
+    <div class="rows">
+      <div class="row"><div class="mono">OPTIQ 2025</div><div><b>Reconfigurable Dielectric Metasurface for Polarization Switching</b><p>Abel Paul Joseph, Yadhu Krishnan E T, Harish N. S. Krishnamoorthy</p></div></div>
+      <div class="row"><div class="mono">OPTIQ 2025</div><div><b>Study of Dirac Modes in Photonic Crystal Lattices Using FEM Simulations</b><p>Yadhu Krishnan E T, Muhammad Fawaz Naushad, M. Ameen Poyli</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="toolbox">
+  <div class="trace"></div>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Toolbox</h2>
+      <p>What I use to design a device, simulate it and measure it.</p>
+    </div>
+    <div class="cols">
+      <div class="glass"><h3>Photonic design and simulation</h3><ul><li>Ansys Lumerical</li><li>COMSOL Multiphysics</li><li>MIT Photonic Bands</li><li>Zemax</li></ul></div>
+      <div class="glass"><h3>Code and data</h3><ul><li>Python: NumPy, SciPy, Matplotlib</li><li>MATLAB</li><li>LabVIEW</li><li>OriginPro, LaTeX</li></ul></div>
+      <div class="glass"><h3>Lab</h3><ul><li>Optical alignment</li><li>Spectroscopy and interferometry</li><li>Polarimetry</li><li>Cleanroom processes</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="background">
+  <div class="trace"></div>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Background</h2>
+      <p>Education, training and student roles.</p>
+    </div>
+    <div class="rows">
+      <div class="row"><div class="mono">2026 – now</div><div><b>Advanced MSc in Silicon Photonics</b>, Ghent University, Belgium</div></div>
+      <div class="row"><div class="mono">2021 – 2026</div><div><b>Five-Year Integrated MSc in Photonics</b>, International School of Photonics, CUSAT, India</div></div>
+      <div class="row"><div class="mono">2025</div><div><b>Photonic Integrated Circuits</b>, IISc Bangalore (MOOC)</div></div>
+      <div class="row"><div class="mono">2024</div><div><b>CeNSE Winter School on Semiconductor Technology</b>, IISc. Certificate of Distinction</div></div>
+      <div class="row"><div class="mono">2024</div><div><b>Materials Design for Electronic, Electromechanical and Optical Functions</b>, IISc / NPTEL</div></div>
+    </div>
+    <div class="two">
+      <div>
+        <h3>IEEE Photonics Society</h3>
+        <div class="rows">
+          <div class="row"><div class="mono">2023 – 2025</div><div><b>Secretary</b>, CUSAT Student Branch</div></div>
+          <div class="row"><div class="mono">2024 – 2025</div><div><b>Student Representative</b>, Kerala Chapter<p>Best Student Volunteer Award 2024.</p></div></div>
+        </div>
+      </div>
+      <div>
+        <h3>Student roles and outreach</h3>
+        <div class="rows">
+          <div class="row"><div class="mono">2026 – now</div><div><b>Student Representative</b>, Advanced MSc in Silicon Photonics, Ghent University</div></div>
+          <div class="row"><div class="mono">2025</div><div><b>Media Team Manager</b>, EtchNew 2025 national tech fest</div></div>
+          <div class="row"><div class="mono">2024</div><div><b>Volunteer</b>, Optics To School</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<dialog id="detail" aria-labelledby="dTitle">
+  <button class="x" id="dClose" type="button" aria-label="Close">×</button>
+  <div class="d-top">
+    <div class="thumb" id="dThumb"></div>
+    <div class="txt">
+      <div class="mono" id="dMeta"></div>
+      <h3 id="dTitle"></h3>
+      <p id="dLead"></p>
+    </div>
+  </div>
+  <ul class="brief" id="dList"></ul>
+</dialog>
+
+<footer id="contact">
+  <div class="trace"></div>
+  <div class="wrap">
+    <h2>Get in touch</h2>
+    <p>I am looking for PhD, industrial PhD and R&amp;D positions in integrated photonics.</p>
+    <div class="social">
+      <a class="glass" href="mailto:Yadhukrishnan.ethanurthupale@ugent.be"><img src="icons/email.svg" alt="" width="20" height="20" loading="lazy">Email</a>
+      <a class="glass" href="https://www.linkedin.com/in/yadhu-krishnan-e-t-1020"><img src="icons/linkedin.png" alt="" width="20" height="20" loading="lazy">LinkedIn</a>
+      <a class="glass" href="https://github.com/yadhu1020"><img src="icons/github.png" alt="" width="20" height="20" loading="lazy">GitHub</a>
+      <a class="glass" href="https://instagram.com/yadhu1020"><img src="icons/instagram.png" alt="" width="20" height="20" loading="lazy">Instagram</a>
+      <a class="glass" href="https://x.com/yadhu1020"><img src="icons/x.svg" alt="" width="20" height="20" loading="lazy">X</a>
+    </div>
+    <div class="mono fine">Yadhu Krishnan E T · Ghent, Belgium</div>
+  </div>
+</footer>
+
+<script>
+// ---------- Hero: two coupled racetrack resonators (Vernier filter) between an input bus and a drop bus ----------
+const still=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let animOn=!still;
+const stage=document.getElementById('stage'), tilt=document.getElementById('tilt'), chipCv=document.getElementById('chipcv'), runBtn=document.getElementById('run');
+const chipEl=document.querySelector('.chip');
+// input bus on top, MRR1 under it, the larger MRR2 under MRR1, drop bus at the bottom
+const LW=600, LH=350, LENS=80, BT=96, BB=294, R1=38, R2=46, C1Y=BT+10+R1, C2Y=C1Y+R1+10+R2;
+const X1A=290, X1B=430, X2A=170, X2B=350, XIN=360, XC=320, XD=260;   // racetrack straights and the three coupling points
+const mk=(pts)=>{ const cum=[0]; for(let i=1;i<pts.length;i++) cum.push(cum[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1])); return {pts:pts,cum:cum,len:cum[cum.length-1]}; };
+// closed racetrack starting on its top straight at x0; cw: light first moves right
+const race=(xa,xb,cy,r,x0,cw)=>{ const p=[[x0,cy-r]], arc=(xc,a0,a1)=>{ for(let k=0;k<=40;k++){ const a=a0+(a1-a0)*k/40; p.push([xc+r*Math.cos(a),cy+r*Math.sin(a)]); } }, h=Math.PI/2;
+  if(cw){ arc(xb,-h,h); arc(xa,h,3*h); } else { arc(xa,-h,-3*h); arc(xb,h,-h); }
+  p.push([x0,cy-r]); return mk(p); };
+const PATH={ in:mk([[86,BT],[XIN,BT]]), th:mk([[XIN,BT],[540,BT]]), r1:race(X1A,X1B,C1Y,R1,XIN,true), r2:race(X2A,X2B,C2Y,R2,XC,false), out:mk([[XD,BB],[522,BB]]) };
+PATH.r1.ex=(X1B-XIN)+Math.PI*R1+(X1B-XC);     // distance along MRR1 from the input bus to the MRR2 coupling point
+PATH.r2.ex=(XC-X2A)+Math.PI*R2+(XD-X2A);      // distance along MRR2 from MRR1 to the drop bus
+PATH.r1x=PATH.r1;                              // rest of the lap in MRR1, back up to the input bus
+const at=(P,s)=>{ s=Math.max(0,Math.min(P.len-1e-6,s)); let lo=0,hi=P.cum.length-1; while(hi-lo>1){ const m=(lo+hi)>>1; if(P.cum[m]<=s) lo=m; else hi=m; }
+  const a=P.pts[lo], b=P.pts[hi], seg=(P.cum[hi]-P.cum[lo])||1, f=(s-P.cum[lo])/seg;
+  return [a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f, (b[0]-a[0])/seg, (b[1]-a[1])/seg]; };
+
+// photons: input bus -> MRR1 -> MRR2 (when the two are tuned together) -> drop bus; otherwise back out to the through port
+const N=window.innerWidth<700?70:120, parts=[];
+let time=0, load1=0, load2=0, outGlow=0;
+const tune=()=>0.5+0.5*Math.sin(time*0.45);          // how well MRR2 is tuned onto MRR1
+const isRing=(p)=>p.path==='r1'||p.path==='r2'||p.path==='r1x';
+const plen=(p)=>{ const P=PATH[p.path]; return (p.path==='r1'||p.path==='r2')?p.laps*P.len+P.ex:P.len; };
+const ppos=(p)=>{ const P=PATH[p.path]; return at(P,isRing(p)?p.s%P.len:p.s); };
+for(let i=0;i<N;i++) parts.push({path:'in',s:-Math.random()*520,v:70+Math.random()*30,laps:0,ox:0,oy:0,dx:0,dy:0,k:0,x:-999,y:-999,tx:1,ty:0});
+const step=(p,dt,boost)=>{
+  p.s+=p.v*dt*boost;
+  let L=plen(p);
+  while(p.s>=L){
+    const P=PATH[p.path], e=at(P,(p.path==='r1'||p.path==='r2')?P.ex:P.len), carry=p.s-L;
+    if(p.path==='r1'&&Math.random()>0.15+0.75*tune()){ p.path='r1x'; p.s=P.ex+carry; L=plen(p); continue; }
+    let again=false;
+    if(p.path==='in'){ if(Math.random()<0.8){ p.path='r1'; p.laps=Math.floor(Math.random()*3); } else p.path='th'; }
+    else if(p.path==='r1'){ p.path='r2'; p.laps=Math.floor(Math.random()*3); }
+    else if(p.path==='r1x') p.path='th';
+    else if(p.path==='r2') p.path='out';
+    else { if(p.path==='out') outGlow=Math.min(1.6,outGlow+0.16); p.path='in'; p.s=-Math.random()*80; p.ox=0; p.oy=0; again=true; }
+    L=plen(p); if(again) continue;
+    p.s=carry; const n=ppos(p); p.ox+=e[0]-n[0]; p.oy+=e[1]-n[1];
+  }
+};
+
+// cursor acts like a local refractive-index bump: photons slow down, brighten and are pushed aside
+const ptr={x:-999,y:-999,on:false};
+const sim=(dt)=>{
+  let c1=0, c2=0;
+  for(let i=0;i<parts.length;i++){
+    const p=parts[i]; let boost=1, tkx=0, tky=0;
+    if(ptr.on&&p.s>=0){ const ddx=p.x-ptr.x, ddy=p.y-ptr.y, d=Math.hypot(ddx,ddy);
+      if(d<LENS){ const q=1-d/LENS; p.k=q*q; boost=1-0.55*p.k; tkx=ddx/(d||1)*p.k*14; tky=ddy/(d||1)*p.k*14; } else p.k=0;
+    } else p.k=0;
+    step(p,dt,boost);
+    if(p.s>=0){ if(p.path==='r1'||p.path==='r1x') c1++; else if(p.path==='r2') c2++; }
+    const e=Math.min(1,dt*10); p.dx+=(tkx-p.dx)*e; p.dy+=(tky-p.dy)*e;
+    const dec=Math.exp(-dt*7); p.ox*=dec; p.oy*=dec;
+    if(p.s>=0){ const q=ppos(p); p.x=q[0]+p.ox+p.dx; p.y=q[1]+p.oy+p.dy; p.tx=q[2]; p.ty=q[3]; }
+  }
+  const f=Math.min(1,dt*3); load1+=(Math.min(1,c1/(N*0.2))-load1)*f; load2+=(Math.min(1,c2/(N*0.12))-load2)*f;
+  outGlow*=Math.exp(-dt*2.2);
+};
+
+// sprites
+const spr=document.createElement('canvas'); spr.width=spr.height=48;
+{ const g=spr.getContext('2d'), gr=g.createRadialGradient(24,24,0,24,24,24);
+  gr.addColorStop(0,'rgba(255,244,244,1)'); gr.addColorStop(.22,'rgba(255,120,135,.9)'); gr.addColorStop(.55,'rgba(255,74,94,.24)'); gr.addColorStop(1,'rgba(255,74,94,0)');
+  g.fillStyle=gr; g.fillRect(0,0,48,48); }
+
+let cx=null, cw=0, ch=0, F=1, statCv=null;
+const HA0=Math.PI*0.74, HA1=Math.PI*1.26;            // tuner electrode on the left bend of MRR2
+const loop=(c,P)=>{ c.beginPath(); for(let i=0;i<P.pts.length;i++){ const q=P.pts[i]; if(i) c.lineTo(q[0],q[1]); else c.moveTo(q[0],q[1]); } c.closePath(); };
+const buildStatic=()=>{
+  statCv=document.createElement('canvas'); statCv.width=cw; statCv.height=ch;
+  const x=statCv.getContext('2d'); x.scale(F,F);
+  x.fillStyle='rgba(255,255,255,.055)';
+  for(let gx=20;gx<LW;gx+=20) for(let gy=20;gy<LH;gy+=20) x.fillRect(gx-.6,gy-.6,1.2,1.2);
+  x.lineCap='round'; x.lineJoin='round';
+  const fade=(col,x0,x1)=>{ const g=x.createLinearGradient(x0,0,x1,0); g.addColorStop(0,col); g.addColorStop(1,'rgba(0,0,0,0)'); return g; };
+  const layers=[[11,'rgba(0,0,0,.45)'],[7,'rgba(255,74,94,.2)'],[1.4,'rgba(255,170,178,.35)']];
+  layers.forEach((ly)=>{
+    x.lineWidth=ly[0]; x.strokeStyle=ly[1];
+    x.beginPath(); x.moveTo(86,BT); x.lineTo(440,BT); x.moveTo(200,BB); x.lineTo(522,BB); x.stroke();
+    x.lineCap='butt';
+    x.strokeStyle=fade(ly[1],440,540); x.beginPath(); x.moveTo(440,BT); x.lineTo(540,BT); x.stroke();
+    x.strokeStyle=fade(ly[1],200,120); x.beginPath(); x.moveTo(120,BB); x.lineTo(200,BB); x.stroke();
+    x.lineCap='round'; x.strokeStyle=ly[1];
+    loop(x,PATH.r1); x.stroke(); loop(x,PATH.r2); x.stroke();
+  });
+  // grating couplers: input at top left, drop at bottom right
+  x.fillStyle='rgba(255,74,94,.16)'; x.strokeStyle='rgba(255,120,132,.55)'; x.lineWidth=1;
+  x.beginPath(); x.moveTo(86,BT-3.5); x.lineTo(46,BT-18); x.lineTo(46,BT+18); x.lineTo(86,BT+3.5); x.closePath(); x.fill(); x.stroke();
+  x.beginPath(); x.moveTo(522,BB-3.5); x.lineTo(562,BB-18); x.lineTo(562,BB+18); x.lineTo(522,BB+3.5); x.closePath(); x.fill(); x.stroke();
+  for(let t=0;t<6;t++){
+    const gx=52+t*6.5, hh=18-(gx-46)*(14.5/40); x.beginPath(); x.moveTo(gx,BT-hh); x.lineTo(gx,BT+hh); x.stroke();
+    const ox=528+t*6.5, oh=3.5+(ox-522)*(14.5/40); x.beginPath(); x.moveTo(ox,BB-oh); x.lineTo(ox,BB+oh); x.stroke();
+  }
+  // fiber
+  x.strokeStyle='rgba(255,255,255,.14)'; x.lineWidth=9; x.beginPath(); x.moveTo(30,6); x.lineTo(65,BT-22); x.stroke();
+  x.strokeStyle='rgba(255,255,255,.62)'; x.lineWidth=3; x.beginPath(); x.moveTo(30,6); x.lineTo(65,BT-22); x.stroke();
+  // tuner electrode on MRR2, with leads and pads
+  const hp=document.createElement('canvas'); hp.width=hp.height=6; { const g=hp.getContext('2d'); g.strokeStyle='rgba(255,74,94,.8)'; g.lineWidth=1.3; g.beginPath(); g.moveTo(-1,7); g.lineTo(7,-1); g.moveTo(-1,1); g.lineTo(1,-1); g.moveTo(5,7); g.lineTo(7,5); g.stroke(); }
+  x.lineCap='butt'; x.strokeStyle=x.createPattern(hp,'repeat'); x.lineWidth=17; x.beginPath(); x.arc(X2A,C2Y,R2,HA0,HA1); x.stroke();
+  x.strokeStyle='rgba(255,100,115,.9)'; x.lineWidth=1.2;
+  const ya=C2Y+R2*Math.sin(HA0), yb=C2Y+R2*Math.sin(HA1), xa=X2A+(R2+9)*Math.cos(HA0);
+  x.beginPath(); x.moveTo(xa,ya); x.lineTo(114,ya); x.moveTo(xa,yb); x.lineTo(114,yb); x.stroke();
+  x.fillStyle='rgba(255,100,115,.55)'; x.fillRect(96,ya-8,18,16); x.fillRect(96,yb-8,18,16);
+  // labels
+  x.font='11px "IBM Plex Mono",monospace'; x.fillStyle='rgba(255,255,255,.62)'; x.textAlign='center';
+  if('letterSpacing' in x) x.letterSpacing='1.5px';
+  x.fillText('INPUT',70,BT+38); x.fillText('MRR 1',(X1A+X1B)/2,C1Y+4); x.fillText('MRR 2',(X2A+X2B)/2,C2Y+4); x.fillText('TUNER',105,yb-16); x.fillText('DROP',542,BB+38); x.fillText('THROUGH',496,BT-16);
+};
+const drawChip=()=>{
+  if(!cx) return;
+  cx.setTransform(1,0,0,1,0,0); cx.clearRect(0,0,cw,ch); cx.drawImage(statCv,0,0);
+  cx.setTransform(F,0,0,F,0,0);
+  cx.globalCompositeOperation='lighter';
+  const tn=tune();
+  // tuner glow
+  cx.lineCap='butt'; cx.lineWidth=17; cx.strokeStyle='rgba(255,74,94,'+(0.06+0.3*tn)+')'; cx.beginPath(); cx.arc(X2A,C2Y,R2,HA0,HA1); cx.stroke();
+  // fiber tip and coupling point
+  const tp=0.55+0.15*Math.sin(time*2);
+  cx.globalAlpha=tp; cx.drawImage(spr,65-18,BT-22-18,36,36); cx.drawImage(spr,67-26,BT-26,52,52); cx.globalAlpha=1;
+  // racetracks filling up
+  cx.lineCap='round'; cx.lineJoin='round';
+  [[PATH.r1,load1],[PATH.r2,load2]].forEach((r)=>{
+    cx.lineWidth=14; cx.strokeStyle='rgba(255,74,94,'+(0.05+0.26*r[1])+')'; loop(cx,r[0]); cx.stroke();
+    cx.lineWidth=5; cx.strokeStyle='rgba(255,110,125,'+(0.1+0.45*r[1])+')'; loop(cx,r[0]); cx.stroke(); });
+  // output beam
+  const g=Math.min(1,0.15+outGlow*0.6), bg=cx.createLinearGradient(542,BB-8,584,BB-58);
+  bg.addColorStop(0,'rgba(255,110,125,'+(0.6*g)+')'); bg.addColorStop(1,'rgba(255,74,94,0)');
+  cx.fillStyle=bg; cx.beginPath(); cx.moveTo(530,BB-8); cx.lineTo(556,BB-8); cx.lineTo(598,BB-60); cx.lineTo(570,BB-62); cx.closePath(); cx.fill();
+  cx.globalAlpha=Math.min(1,0.3+outGlow*0.5); cx.drawImage(spr,542-24,BB-24,48,48); cx.globalAlpha=1;
+  // photons (those heading to a through port fade out along it)
+  for(let i=0;i<parts.length;i++){
+    const p=parts[i]; if(p.s<0) continue;
+    const fo=p.path==='th'?Math.max(0,1-p.s/PATH.th.len):1, d=20*(1+0.7*p.k);
+    cx.globalAlpha=Math.min(1,0.9+p.k)*fo; cx.drawImage(spr,p.x-d/2,p.y-d/2,d,d);
+    cx.globalAlpha=0.45*fo; cx.drawImage(spr,p.x-p.tx*6-d*0.4,p.y-p.ty*6-d*0.4,d*0.8,d*0.8);
+    cx.globalAlpha=0.2*fo; cx.drawImage(spr,p.x-p.tx*12-d*0.3,p.y-p.ty*12-d*0.3,d*0.6,d*0.6);
+  }
+  cx.globalAlpha=1; cx.globalCompositeOperation='source-over';
+  // cursor lens
+  if(ptr.on){
+    const lg=cx.createRadialGradient(ptr.x,ptr.y,0,ptr.x,ptr.y,LENS); lg.addColorStop(0,'rgba(255,255,255,.09)'); lg.addColorStop(1,'rgba(255,255,255,0)');
+    cx.fillStyle=lg; cx.beginPath(); cx.arc(ptr.x,ptr.y,LENS,0,6.2832); cx.fill();
+    cx.strokeStyle='rgba(255,255,255,.2)'; cx.lineWidth=1; cx.setLineDash([3,5]); cx.beginPath(); cx.arc(ptr.x,ptr.y,LENS,0,6.2832); cx.stroke(); cx.setLineDash([]);
+  }
+};
+const sizeChip=()=>{
+  const w=chipCv.clientWidth; if(!w) return;
+  const d=Math.min(window.devicePixelRatio||1,2);
+  cw=Math.round(w*d); ch=Math.round(cw*LH/LW); chipCv.width=cw; chipCv.height=ch; cx=chipCv.getContext('2d'); F=cw/LW;
+  buildStatic(); drawChip();
+};
+
+// tilt follows the pointer; drifts on its own when the pointer is idle
+let nx=0, ny=0, tiltX=0, tiltY=0, lastMove=-1e9, hRaf=0, hLast=0, heroVis=true;
+document.addEventListener('pointermove',(e)=>{
+  lastMove=performance.now();
+  const r=stage.getBoundingClientRect();
+  nx=Math.max(-1,Math.min(1,(e.clientX-(r.left+r.width/2))/(window.innerWidth/2)));
+  ny=Math.max(-1,Math.min(1,(e.clientY-(r.top+r.height/2))/(window.innerHeight/2)));
+  const c=chipCv.getBoundingClientRect(), lx=(e.clientX-c.left)/c.width*LW, ly=(e.clientY-c.top)/c.height*LH;
+  ptr.x=lx; ptr.y=ly; ptr.on=lx>-40&&lx<LW+40&&ly>-40&&ly<LH+40;
+},{passive:true});
+document.addEventListener('pointerup',(e)=>{ if(e.pointerType!=='mouse') ptr.on=false; },{passive:true});
+document.documentElement.addEventListener('pointerleave',()=>{ ptr.on=false; });
+
+const heroTick=(now)=>{
+  hRaf=0; if(!animOn||!heroVis) return;
+  const dt=Math.min(0.05,(now-hLast)/1000||0.016); hLast=now; time+=dt;
+  const idle=now-lastMove>2500, gx=idle?Math.sin(time*0.5)*0.55:nx, gy=idle?Math.cos(time*0.4)*0.35:ny;
+  tiltX+=(gx-tiltX)*Math.min(1,dt*4); tiltY+=(gy-tiltY)*Math.min(1,dt*4);
+  tilt.style.transform='rotateX('+(-tiltY*6).toFixed(2)+'deg) rotateY('+(tiltX*9).toFixed(2)+'deg)';
+  chipCv.style.transform='translate('+(-tiltX*5).toFixed(1)+'px,'+(-tiltY*4).toFixed(1)+'px)';
+  chipEl.style.setProperty('--gx',(50+tiltX*32).toFixed(1)+'%'); chipEl.style.setProperty('--gy',(28+tiltY*30).toFixed(1)+'%');
+  sim(dt); drawChip();
+  hRaf=requestAnimationFrame(heroTick);
+};
+const heroKick=()=>{ if(!hRaf&&animOn&&heroVis){ hLast=performance.now(); hRaf=requestAnimationFrame(heroTick); } };
+if('IntersectionObserver' in window) new IntersectionObserver((es)=>{ heroVis=es[0].isIntersecting; if(heroVis) heroKick(); }).observe(stage);
+
+for(let i=0;i<500;i++) sim(0.02);
+sizeChip();
+if('ResizeObserver' in window) new ResizeObserver(sizeChip).observe(chipCv); else window.addEventListener('resize',sizeChip);
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(sizeChip);
+heroKick();
+
+// pause / play both animations
+const setAnim=(on)=>{
+  animOn=on; runBtn.setAttribute('aria-pressed',on?'true':'false'); runBtn.textContent=on?'Pause animation':'Play animation';
+  if(on) heroKick();
+};
+runBtn.addEventListener('click',()=>setAnim(!animOn));
+if(still) runBtn.hidden=true;
+
+// headings, cards and rows replay every time they come into view: up from below when scrolling down, down from above when scrolling up
+if(!still&&'IntersectionObserver' in window){
+  const io=new IntersectionObserver((es)=>{ es.forEach((e)=>{ const n=e.target;
+    if(e.isIntersecting){ void n.offsetWidth; n.classList.remove('snap'); n.classList.remove('pre'); }
+    else { n.style.setProperty('--dy',e.boundingClientRect.top<0?'-14px':'14px'); n.classList.add('snap','pre'); }
+  }); },{rootMargin:'0px 0px -6% 0px'});
+  document.querySelectorAll('.sec-head,.card,.row,.cols>div,.two h3,footer h2,footer p,footer .social').forEach((n)=>{
+    n.classList.add('rv');
+    if(n.matches('.card,.cols>div')){ const k=Math.round((n.offsetLeft-n.parentNode.offsetLeft)/(n.offsetWidth+18)); n.style.transitionDelay=(Math.min(k,2)*60)+'ms'; }
+    io.observe(n);
+  });
+}
+
+// section dividers replay every time they come into view, from the side the page is moving toward
+if(!still&&'IntersectionObserver' in window){
+  let lastY=window.scrollY, down=true;
+  window.addEventListener('scroll',()=>{ const y=window.scrollY; if(y!==lastY){ down=y>lastY; lastY=y; } },{passive:true});
+  const tio=new IntersectionObserver((es)=>{ es.forEach((e)=>{ const t=e.target;
+    if(e.isIntersecting){ t.style.setProperty('--from',down?'left':'right'); void t.offsetWidth; t.classList.remove('snap'); t.classList.remove('pre'); }
+    else t.classList.add('snap','pre');
+  }); },{rootMargin:'0px 0px -6% 0px'});
+  document.querySelectorAll('.trace').forEach((t)=>tio.observe(t));
+}
+
+// nav: mark the section in view
+if('IntersectionObserver' in window){
+  const links={}; document.querySelectorAll('nav a').forEach((a)=>{ links[a.getAttribute('href').slice(1)]=a; });
+  const atEnd=()=>window.scrollY+window.innerHeight>=document.documentElement.scrollHeight-4;
+  const nio=new IntersectionObserver((es)=>{ es.forEach((e)=>{ if(!e.isIntersecting||atEnd()) return;
+    for(const k in links) links[k].classList.toggle('on',k===e.target.id);
+    const a=links[e.target.id]; if(a&&a.parentNode.scrollWidth>a.parentNode.clientWidth) a.parentNode.scrollLeft=a.offsetLeft-a.parentNode.offsetLeft-16;
+  }); },{rootMargin:'-45% 0px -50% 0px'});
+  document.querySelectorAll('section[id],footer[id]').forEach((s)=>nio.observe(s));
+  window.addEventListener('scroll',()=>{ if(atEnd()) for(const k in links) links[k].classList.toggle('on',k==='contact'); },{passive:true});
+}
+
+// ---------- Card schematics: light lines on dark, the light or the active part in red ----------
+const NS='http://www.w3.org/2000/svg';
+const el=(p,n,a)=>{ const e=document.createElementNS(NS,n); for(const k in a) e.setAttribute(k,a[k]); p.appendChild(e); return e; };
+const INK='rgba(255,255,255,.74)', DIM='rgba(255,255,255,.3)', RED='#ff4a5e', S3=Math.sqrt(3);
+
+// Vernier filter: input bus, two coupled racetrack resonators of different size, drop bus; tuner on the second one
+const sv=document.getElementById('svgVern');
+[[22,34,278,34],[22,150,278,150]].forEach((l)=>el(sv,'line',{x1:l[0],y1:l[1],x2:l[2],y2:l[3],stroke:INK,'stroke-width':3,'stroke-linecap':'round'}));
+el(sv,'rect',{x:132,y:42,width:104,height:40,rx:20,fill:'none',stroke:INK,'stroke-width':3});
+el(sv,'rect',{x:60,y:90,width:146,height:52,rx:26,fill:'none',stroke:INK,'stroke-width':3});
+el(sv,'path',{d:'M 68.2 134.9 A 26 26 0 0 1 68.2 97.1','class':'g',fill:'none',stroke:RED,'stroke-width':8,'stroke-linecap':'round'});
+const vt=(x,y,t)=>{ const e=el(sv,'text',{x:x,y:y,'font-family':'IBM Plex Mono, monospace','font-size':9,fill:DIM,'text-anchor':'middle','letter-spacing':1}); e.textContent=t; };
+vt(184,65,'MRR 1'); vt(133,119,'MRR 2'); vt(40,25,'INPUT'); vt(262,166,'DROP');
+
+// apodized grating coupler, side view: tooth and groove widths change along the grating, beam leaves toward a tilted fiber
+const sg=document.getElementById('svgGc');
+el(sg,'rect',{x:14,y:124,width:272,height:30,fill:'rgba(255,255,255,.07)'});
+el(sg,'line',{x1:14,y1:154,x2:286,y2:154,stroke:DIM,'stroke-width':1.5});
+el(sg,'rect',{x:14,y:114,width:272,height:10,fill:INK});
+el(sg,'rect',{x:14,y:104,width:76,height:10,fill:INK});
+let gx=90;
+for(let k=0;k<12;k++){ const tw=9-k*0.5, gw=2+k*0.6; gx+=gw; el(sg,'rect',{x:gx,y:104,width:tw,height:10,fill:INK}); gx+=tw; }
+const fb=el(sg,'g',{transform:'rotate(9 166 62)'});
+el(fb,'rect',{x:136,y:-30,width:60,height:92,fill:'rgba(255,255,255,.06)',stroke:DIM,'stroke-width':1.2});
+el(fb,'rect',{x:159,y:-30,width:14,height:92,fill:'rgba(255,74,94,.28)'});
+el(sg,'line',{x1:14,y1:114,x2:112,y2:114,'class':'g',stroke:RED,'stroke-width':3,'stroke-linecap':'round'});
+[[124,.25],[140,.6],[156,1],[172,.6],[188,.25]].forEach((b)=>el(sg,'line',{x1:b[0],y1:99,x2:b[0]+5.5,y2:66,'class':'g',stroke:RED,'stroke-width':2,'stroke-linecap':'round',opacity:b[1]}));
+
+// liquid crystal cell: two plates, molecules tilting most in the middle, light passing through
+const sl=document.getElementById('svgLc');
+el(sl,'line',{x1:150,y1:8,x2:150,y2:172,'class':'g',stroke:RED,'stroke-width':3,'stroke-linecap':'round',opacity:.9});
+el(sl,'rect',{x:40,y:26,width:220,height:8,fill:INK}); el(sl,'rect',{x:40,y:146,width:220,height:8,fill:INK});
+for(let r=0;r<5;r++){ const z=(r+.5)/5, ang=-70*Math.sin(Math.PI*z), y=44+92*z;
+  for(let q=0;q<8;q++){ const x=58+q*26.3+(r%2?6:-6); el(sl,'ellipse',{cx:x,cy:y,rx:9.5,ry:3.2,fill:'rgba(255,255,255,.62)',transform:'rotate('+ang.toFixed(1)+' '+x.toFixed(1)+' '+y.toFixed(1)+')'}); } }
+
+// photonic crystal waveguide with a 120 degree bend
+const sb=document.getElementById('svgBend');
+const a=18, ox=150, oy=118;
+for(let i=-12;i<=12;i++) for(let j=-8;j<=8;j++){
+  const px=ox+(i+j/2)*a, py=oy-j*a*S3/2;
+  if(px<8||px>292||py<8||py>172) continue;
+  if((j===0&&i<=0)||(i===0&&j>=0)) continue;
+  el(sb,'circle',{cx:px,cy:py,r:5,fill:'rgba(255,255,255,.6)'});
+}
+el(sb,'polyline',{points:'8,'+oy+' '+ox+','+oy+' '+(ox+a*3.4)+','+(oy-a*6.8*S3/2),'class':'g',fill:'none',stroke:RED,'stroke-width':3,'stroke-linecap':'round','stroke-linejoin':'round'});
+
+// metasurface: lattice of triangular holes, one unit cell marked
+const sm=document.getElementById('svgMeta');
+for(let r=0;r<4;r++) for(let q=0;q<7;q++){
+  const x=33+q*39, y=27+r*42, hot=(r===1&&q===3);
+  el(sm,'polygon',{points:x+','+(y-11)+' '+(x+11)+','+(y+8)+' '+(x-11)+','+(y+8),fill:hot?'rgba(255,74,94,.3)':'none',stroke:hot?RED:INK,'stroke-width':1.8,'stroke-linejoin':'round','class':hot?'g':''});
+  if(hot) el(sm,'rect',{x:x-19.5,y:y-22.5,width:39,height:42,fill:'none',stroke:RED,'stroke-width':1.2,'stroke-dasharray':'4 4'});
+}
+
+// photonic crystal fibre cross-section
+const sp=document.getElementById('svgPcf');
+el(sp,'circle',{cx:150,cy:90,r:80,fill:'none',stroke:INK,'stroke-width':1.5});
+const c=15.5;
+for(let i=-6;i<=6;i++) for(let j=-6;j<=6;j++){
+  const px=150+(i+j/2)*c, py=90-j*c*S3/2, d=Math.hypot(px-150,py-90);
+  if(d>68||d<1) continue;
+  el(sp,'circle',{cx:px,cy:py,r:4.3,fill:'rgba(255,255,255,.6)'});
+}
+el(sp,'circle',{cx:150,cy:90,r:6,'class':'g',fill:RED});
+
+// two-colour pyrometry: one hot source imaged in two wavelength bands
+const sy=document.getElementById('svgPyro');
+el(sy,'circle',{cx:52,cy:90,r:24,'class':'g',fill:RED});
+el(sy,'line',{x1:82,y1:82,x2:150,y2:54,stroke:INK,'stroke-width':1.5});
+el(sy,'line',{x1:82,y1:98,x2:150,y2:126,stroke:INK,'stroke-width':1.5});
+el(sy,'rect',{x:150,y:32,width:50,height:42,fill:'none',stroke:INK,'stroke-width':1.5});
+el(sy,'rect',{x:150,y:106,width:50,height:42,fill:'none',stroke:INK,'stroke-width':1.5});
+el(sy,'circle',{cx:175,cy:53,r:12,fill:RED,opacity:.9});
+el(sy,'circle',{cx:175,cy:127,r:12,fill:RED,opacity:.45});
+const tx=(x,y,s)=>{ const t=el(sy,'text',{x:x,y:y,'font-family':'IBM Plex Mono, monospace','font-size':12,fill:INK}); t.textContent=s; };
+tx(208,58,'I(λ₁)'); tx(208,132,'I(λ₂)'); tx(256,95,'→ T');
+
+// ---------- Project briefs: a card opens its points in a dialog ----------
+const dlg=document.getElementById('detail'), dThumb=document.getElementById('dThumb');
+let opener=null;
+const openCard=(card)=>{
+  opener=card;
+  const g=card.querySelector('.thumb svg').cloneNode(true); g.removeAttribute('id');
+  dThumb.textContent=''; dThumb.appendChild(g);
+  document.getElementById('dMeta').innerHTML=card.querySelector('.mono').innerHTML;
+  document.getElementById('dTitle').textContent=card.querySelector('h3').textContent;
+  document.getElementById('dLead').textContent=card.querySelector('p').textContent;
+  document.getElementById('dList').innerHTML=card.querySelector('.brief').innerHTML;
+  if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open','');
+};
+const closeCard=()=>{ if(dlg.close) dlg.close(); else dlg.removeAttribute('open'); };
+document.querySelectorAll('.card').forEach((c)=>{
+  c.addEventListener('click',()=>openCard(c));
+  c.addEventListener('keydown',(e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openCard(c); } });
+});
+document.getElementById('dClose').addEventListener('click',closeCard);
+dlg.addEventListener('click',(e)=>{ if(e.target===dlg) closeCard(); });
+dlg.addEventListener('close',()=>{ if(opener) opener.focus({preventScroll:true}); });
+</script>
+</body>
+</html>
